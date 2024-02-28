@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 import { Assessment } from "../../types/assessment";
 import { useNavigate } from "react-router-dom";
+import { getAssessments } from "../../services/assessment.service";
 
 export function AssessmentList() {
   const navigate = useNavigate()
@@ -10,8 +11,8 @@ export function AssessmentList() {
 
   useEffect(() => {
     const fetchAssessments = async () => {
-      const token = localStorage.getItem('token')
-      const userId = localStorage.getItem('userId')
+      const token = localStorage.getItem('token') ?? ""
+      const userId = localStorage.getItem('userId') ?? ""
 
       if (!token) {
         navigate('/login')
@@ -19,15 +20,11 @@ export function AssessmentList() {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3333/students/${userId}/assessments`, {
-          headers: {
-            Authorization: token
-          }
-        })
+        const assessments = await getAssessments(userId, token)
 
-        setAssessments(response.data.data)
-      } catch (error) {
-        console.log('Erro ao carregar alunos.')
+        setAssessments(assessments)
+      } catch (error: any) {
+        console.log(`Erro ao carregar avaliações: ${error.message}`)
       }
     }
 
