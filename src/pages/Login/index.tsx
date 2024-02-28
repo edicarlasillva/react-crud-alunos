@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import { ButtonStyle, FormContainer, InputStyle, Title } from "./styles";
+import { login } from "../../services/auth.service";
 
 export function Login() {
   const navigate = useNavigate()
@@ -21,19 +22,14 @@ export function Login() {
     event.preventDefault()
 
     try {
-      const response = await axios.post('http://localhost:3333/login', formData)
-
-      // const token = response.data.token
-      // const userId = response.data.userId
-
-      const { token, userId } = response.data
+      const { token, userId } = await login(formData.email, formData.password)
 
       localStorage.setItem('token', token)
       localStorage.setItem('userId', userId)
 
       navigate('/assessments')
-    } catch (error) {
-      console.log('Erro ao fazer login', error)
+    } catch (error: any) {
+      console.log(`Erro ao fazer login: ${error.message}`)
     }
   }
 
