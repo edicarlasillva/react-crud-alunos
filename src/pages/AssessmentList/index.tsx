@@ -3,17 +3,19 @@ import { useEffect, useState } from "react";
 
 import { Assessment } from "../../types/assessment";
 import { useNavigate } from "react-router-dom";
-import { getAssessments } from "../../services/assessment.service";
+import { deleteAssessments, getAssessments } from "../../services/assessment.service";
+
+import { ButtonStyle, Container, Title } from "./styles";
 
 export function AssessmentList() {
   const navigate = useNavigate()
   const [assessments, setAssessments] = useState<Assessment[]>([])
 
+  const token = localStorage.getItem("token") ?? ""
+  const userId = localStorage.getItem('userId') ?? ""
+
   useEffect(() => {
     const fetchAssessments = async () => {
-      const token = localStorage.getItem('token') ?? ""
-      const userId = localStorage.getItem('userId') ?? ""
-
       if (!token) {
         navigate('/login')
         throw new Error("Token não encontrado.")
@@ -29,19 +31,34 @@ export function AssessmentList() {
     }
 
     fetchAssessments()
-  }, [navigate])
+  }, [navigate, token, userId])
+
+  const handleDelete = async (userId: string, assessmentId: string) => {
+    try {
+      await deleteAssessments(userId, assessmentId, token)
+
+      setAssessments(prevState => 
+        prevState.filter(assessment => assessment.id !== assessmentId)
+      )
+
+    } catch (error) {
+      console.log('Erro ao excluir avaliação')
+    }
+  }
 
   return (
-    <>
-      <h1>Avaliações</h1>
+    <Container>
+      <Title>Avaliações</Title>
       <ul>
         {assessments.map(assessment => (
           <li key={assessment.id}>
             <strong>Disciplina:</strong> {assessment.discipline} {' '}
             <strong>Nota:</strong> {assessment.grade} {' '}
+            <ButtonStyle onClick={() => handleDelete(assessment.idStudent, assessment.id)}>Excluir</ButtonStyle>
           </li>
         ))}
       </ul>
-    </>
+    </Container>
   )
 }
+

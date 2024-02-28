@@ -15,3 +15,15 @@ export async function getAssessments(userId: string, token: string): Promise<Ass
     throw error
   }
 }
+
+export async function deleteAssessments(userId: string, assessmentId: string, token: string): Promise<void> {
+  try {
+    await api.delete(`/students/${userId}/assessments/${assessmentId}`, {
+      headers: {
+        Authorization: token
+      }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
