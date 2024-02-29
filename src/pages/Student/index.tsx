@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
 
 import { Student } from "../../types/students"
-import axios from "axios"
+import { deleteStudent, getStudents } from "../../services/student.service"
 
 export function Student() {
   const [students, setStudents] = useState<Student[]>([])
@@ -9,16 +10,22 @@ export function Student() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get('http://localhost:3333/students')
+        const data = await getStudents()
 
-        setStudents(response.data.data)
-      } catch (error) {
-        console.log('Erro ao carregar alunos.')
+        setStudents(data)
+      } catch (error: any) {
+        console.log('Erro ao carregar alunos: ', error.message)
       }
     }
 
     fetchStudents()
   }, [])
+
+  function handleDelete(id: string) {
+    deleteStudent(id)
+
+    setStudents(prevState => prevState.filter(student => student.id !== id))
+  }
 
   // useEffect(() => {
   //   const fetchStudents = () => {
@@ -42,6 +49,9 @@ export function Student() {
             <strong>Nome:</strong> {student.name} {' '}
             <strong>E-mail:</strong> {student.email} {' '}
             <strong>Idade:</strong> {student.age} {' '}
+            <button onClick={() => handleDelete(student.id)}>
+              Excluir
+            </button>
           </li>
         ))}
       </ul>
