@@ -40,10 +40,13 @@ export function AssessmentList() {
       setAssessments(prevState => 
         prevState.filter(assessment => assessment.id !== assessmentId)
       )
-
     } catch (error) {
       console.log('Erro ao excluir avaliação')
     }
+  }
+
+  const handleEdit = (assessmentId: string) => {
+    navigate(`/assessment/${assessmentId}/edit`)
   }
 
   return (
@@ -55,6 +58,7 @@ export function AssessmentList() {
             <strong>Disciplina:</strong> {assessment.discipline} {' '}
             <strong>Nota:</strong> {assessment.grade} {' '}
             <ButtonStyle onClick={() => handleDelete(assessment.idStudent, assessment.id)}>Excluir</ButtonStyle>
+            <ButtonStyle onClick={() => handleEdit(assessment.id)}>Editar</ButtonStyle>
           </li>
         ))}
       </ul>
